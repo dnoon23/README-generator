@@ -1,55 +1,51 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
+var badge
 
-const generateREADME = ({ title, description, contents, installation, usage, license, contribute, tests, questions, }) =>
+const generateREADME = ({ title, description, installation, usage, license, contribute, tests, github, email }) =>
 
-`# <${title}>
+  `# ${title}
 
 ## Description
 
-${description}Provide a short description explaining the what, why, and how of your project. Use the following questions as a guide:
+${description}
 
-- What was your motivation?
-- Why did you build this project? (Note: the answer is not "Because it was a homework assignment.")
-- What problem does it solve?
-- What did you learn?
+${badge}
 
-## Table of Contents (Optional)
-
-${contents}If your README is long, add a table of contents to make it easy for users to find what they need.
+## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [Credits](#credits)
+- [Contribute](#contribute)
+- [Tests](#tests)
+- [Questions](#questions)
 - [License](#license)
 
 ## Installation
 
-${installation}What are the steps required to install your project? Provide a step-by-step description of how to get the development environment running.
+${installation}
 
 ## Usage
 
-${usage}Provide instructions and examples for use. Include screenshots as needed.
+${usage}
 
-To add a screenshot, create an assets/images folder in your repository and upload your screenshot to it. Then, using the relative file path, add it to your README using the following syntax:
+## Contribute
 
-![alt text](assets/images/screenshot.png)
-
-## License
-
-${license}The last section of a high-quality README file is the license. This lets other developers know what they can and cannot do with your project. If you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/).
-
-## How to Contribute
-
-${contribute}If you created an application or package and would like other developers to contribute to it, you can include guidelines for how to do so. The [Contributor Covenant](https://www.contributor-covenant.org/) is an industry standard, but you can always write your own if you'd prefer.
+${contribute}
 
 ## Tests
 
-${tests}Go the extra mile and write tests for your application. Then provide examples on how to run them here.
+${tests}
 
 ## Questions
 
-${questions}If you created an application or package and would like other developers to contribute to it, you can include guidelines for how to do so. The [Contributor Covenant](https://www.contributor-covenant.org/) is an industry standard, but you can always write your own if you'd prefer.`
+GitHub profile can be found at: https://github.com/${github}
+
+For questions about this project please send an e-mail to: ${email}
+
+## License
+
+License used for this project: ${license}`
 
 inquirer
   .prompt([
@@ -74,9 +70,11 @@ inquirer
       message: 'Provide instructions and examples for use.',
     },
     {
-      type: 'input',
+      type: 'list',
       name: 'license',
-      message: 'What license, if any, would you like to add?',
+      message: 'Use the up and down arrows to select which license would you like to add?',
+      choices: ['Apache', 'GNU', 'MIT', 'ISC', 'None'],
+
     },
     {
       type: 'input',
@@ -86,18 +84,46 @@ inquirer
     {
       type: 'input',
       name: 'tests',
-      message: 'Describe some tests that were run for you project..',
+      message: 'Describe some tests that were run for you project.',
     },
     {
       type: 'input',
-      name: 'questions',
+      name: 'github',
+      message: 'Please provide your GitHub user name.',
+    },
+    {
+      type: 'input',
+      name: 'email',
       message: 'Please provide an e-mail addess that you would like questions about your project sent to.',
     },
   ])
+
+  .then((answers) => {
+    if (answers.license == "Apache") {
+      badge = `[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)`
+      return answers
+    }
+    if (answers.license == "GNU") {
+      badge = `[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)`
+      return answers
+    }
+    if (answers.license == "MIT") {
+      badge = `[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)`
+      return answers
+    }
+    if (answers.license == "ISC") {
+      badge = `[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)`
+      return answers
+    }
+    if (answers.license == "None") {
+      badge = ``
+      return answers
+    }
+  })
   .then((answers) => {
     const readMePageContent = generateREADME(answers);
 
-    fs.writeFile('README.md', readMePageContent, (err) =>
+    fs.writeFile('./Example/README.md', readMePageContent, (err) =>
       err ? console.log(err) : console.log('Successfully created README.md!')
     );
   });
