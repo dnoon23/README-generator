@@ -1,7 +1,8 @@
+//Sets up file to use inquirer and fs
 const inquirer = require('inquirer');
 const fs = require('fs');
-var badge
 
+//Sets up the boilerplate README and variables that get filled in by the inquirer
 const generateREADME = ({ title, description, installation, usage, license, contribute, tests, github, email }) =>
 
   `# ${title}
@@ -47,6 +48,7 @@ For questions about this project please send an e-mail to: ${email}
 
 License used for this project: ${license}`
 
+//Questions asked to the user
 inquirer
   .prompt([
     {
@@ -98,6 +100,7 @@ inquirer
     },
   ])
 
+  //Checks which license was selected and posts the corresponding badge
   .then((answers) => {
     if (answers.license == "Apache") {
       badge = `[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)`
@@ -120,6 +123,8 @@ inquirer
       return answers
     }
   })
+
+  //Writes the README file
   .then((answers) => {
     const readMePageContent = generateREADME(answers);
 
